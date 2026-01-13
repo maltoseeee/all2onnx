@@ -1,0 +1,78 @@
+# =============================
+# OS / Editor
+# =============================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# Vim / Swap
+*.swp
+*.swo
+*~
+
+# =============================
+# Python
+# =============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtualenv
+.venv/
+venv/
+ENV/
+
+# Packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Type checker
+.mypy_cache/
+.pyre/
+.pytype/
+
+# =============================
+# Jupyter
+# =============================
+.ipynb_checkpoints/
+
+# =============================
+# Logs / temp
+# =============================
+*.log
+*.tmp
+*.temp
+
+# =============================
+# ML / ONNX / TensorRT artifacts
+# =============================
+*.onnx
+*.engine
+*.plan
+*.trt
+*.cache
+*.ckpt
+*.bin
+
+# TensorFlow
+*.pb
+*.pbtxt
+
+# =============================
+# Misc
+# =============================
+.cache/

@@ -227,7 +227,7 @@ def fill_random_weights_to_onnx_model(
     *,
     save_as_external_data: bool = True,
     all_tensors_to_one_file: bool = True,
-    external_data_filename: str | None = None,
+    external_data_filename: str = None,
 ):
     """把指定 params 对应的 initializer 填充随机权重并保存。
 
@@ -450,7 +450,7 @@ def export_unipredict_fused_json_to_onnx(
             m["output_tensor_names"],
             opset=opset,
             is_export_onnx=is_export_onnx,
-            output_path=output_dir + f"{onnx_name}.onnx" if is_export_onnx else None,
+            output_path=os.path.join(output_dir, f"{onnx_name}.onnx") if is_export_onnx else None,
         )
         ret[onnx_name] = onnx_b64
 
