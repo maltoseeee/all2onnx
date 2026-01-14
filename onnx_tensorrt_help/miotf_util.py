@@ -115,7 +115,6 @@ def get_inputs_outputs_params_from_yaml(config_file):
         output_tensor_names = [
             output_tensors[e] for e in dnn_model["q_names"].split(" ")
         ]
-        outputs = [e.split(":")[0] for e in output_tensor_names]
 
         slots_config = dnn_model["embedding"]["slots_config"]
         vec_inputs = dnn_model["vec_input"]
@@ -124,8 +123,8 @@ def get_inputs_outputs_params_from_yaml(config_file):
         ]
         params = [c["name"] for c in dnn_model["param"]]
 
-        print(f"\noutputs num: {len(outputs)}, ", output_tensor_names)
-        print(f"\ninputs num: {len(inputs)}")
-        print(f"\nparams num: {len(params)}")
+        print(f"\noutputs num: {len(output_tensor_names)}, ", output_tensor_names)
+        print(f"\ninputs num: {len(inputs)}, ", inputs)
+        print(f"\nparams num: {len(params)}, ", params)
 
-        return inputs, output_tensor_names, outputs, params
+        return inputs, output_tensor_names, params

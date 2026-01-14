@@ -15,7 +15,11 @@ op_mapping = {
     "FusedGatedSum": "fused_gated_sum_dynamic",
     "FusedLayerNorm": "fused_layer_norm_dynamic",
     "MixtureOfExperts": "mixture_of_experts",
+    "MixtureOfExpertsFp8": "mixture_of_experts",
     "RadixTopK": "radix_topk",
+    "QuantizeLinear": "QuantizeLinear",
+    "DequantizeLinear": "DequantizeLinear",
+    "DynamicQuantize": "DynamicQuantize",
 }
 
 
@@ -39,7 +43,6 @@ class LegacyUniCustomTfOperator:
             raise RuntimeError(f"custom op {node.type} not supported currently.")
         node.type = op_mapping.get(node.type) # 根据 unipredict trt plugin 的实现指定
         node.domain = KS_RECO_ONNX_DOMAIN
-        node.set_attr("type", 0)
         node.set_attr("plugin_version", "1.0")
         # node.set_attr("plugin_namespace", "")
 
@@ -57,3 +60,17 @@ class UniCustomTfOperator:
         node.domain = KS_RECO_ONNX_DOMAIN
         node.set_attr("plugin_version", "1")
         #node.set_attr("plugin_namespace", "")
+
+@tf_op(
+    [
+        "DynamicQuantize",
+        "QuantizeLinear",
+        "DequantizeLinear",
+    ]
+)
+class QuantizationTfOperator:
+    @classmethod
+    def version_1(cls, ctx, node, **kwargs):
+        if op_mapping.get(node.type) == None:
+            raise RuntimeError(f"custom op {node.type} not supported currently.")
+        node.type = op_mapping.get(node.type) # 根据 unipredict trt plugin 的实现指定

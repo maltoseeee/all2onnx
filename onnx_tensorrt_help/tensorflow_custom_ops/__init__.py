@@ -25,3 +25,10 @@ fused_layer_norm = custom_tf.fused_layer_norm
 
 mixture_of_experts = custom_tf.mixture_of_experts
 radix_top_k = custom_tf.radix_top_k
+
+
+if int(major) == 2 and int(minor) >= 15:
+    mixture_of_experts_fp8 = custom_tf.mixture_of_experts_fp8
+    quantize_linear = custom_tf.quantize_linear
+    dequantize_linear = custom_tf.dequantize_linear
+    dynamic_quantize = custom_tf.dynamic_quantize

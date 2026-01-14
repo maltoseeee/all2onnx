@@ -421,6 +421,64 @@ def miotf_to_onnxb64(
     )
 
 
+def miotfb64_to_onnxb64(
+    mio_graph_b64, inputs, params, output_tensor_names, opset=None, is_export_onnx=False, output_path=None,
+):
+    """
+    return a base64 encoded onnx model_proto from base64 encode mio tf model_proto.
+    @param:
+      mio_graph_b64: a base64 encoded mio tf graph def
+      inputs: model's input node name (exclude ":idx")
+      params: model's param node name (exclude ":idx")
+      output_tensor_names: model's output tensor name (include "idx")
+    """
+    real_graph_b64 = mio_graph_b64
+    if mio_graph_b64[:9] == "base64://":
+        real_graph_b64 = mio_graph_b64[9:]
+
+    mio_graph = graph_pb2.GraphDef()
+    mio_graph.ParseFromString(base64.b64decode(real_graph_b64.encode("ascii")))
+    return miotf_to_onnxb64(
+        mio_graph,
+        inputs,
+        params,
+        output_tensor_names,
+        opset=opset,
+        is_export_onnx=is_export_onnx,
+        output_path=output_path,
+    )
+
+
+def replace_unipredict_fused_graph_in_json_obj(
+    cfg: Any,
+    onnx_b64_map: Dict[str, str],
+) -> Any:
+    """递归遍历 json 对象，把所有 `uni_predict_fused*` 的 `graph` 字段替换为 onnx base64。
+
+    - 匹配 key：以 `uni_predict_fused` 开头的字段
+    - onnx_name：使用该对象内部字段 `key`
+
+    返回：deepcopy 后的新对象（不会修改传入的 cfg）。
+    """
+
+    new_cfg = copy.deepcopy(cfg)
+
+    def _walk(obj: Any) -> None:
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if isinstance(k, str) and k.startswith("uni_predict_fused") and isinstance(v, dict):
+                    onnx_name = v.get("key")
+                    if isinstance(onnx_name, str) and onnx_name in onnx_b64_map:
+                        v["graph"] = onnx_b64_map[onnx_name]
+                _walk(v)
+        elif isinstance(obj, list):
+            for it in obj:
+                _walk(it)
+
+    _walk(new_cfg)
+    return new_cfg
+
+
 def export_unipredict_fused_json_to_onnx(
     json_path: str,
     output_dir: str = "./onnx_out",
@@ -455,31 +513,3 @@ def export_unipredict_fused_json_to_onnx(
         ret[onnx_name] = onnx_b64
 
     return ret
-
-
-def miotfb64_to_onnxb64(
-    mio_graph_b64, inputs, params, output_tensor_names, opset=None, is_export_onnx=False, output_path=None,
-):
-    """
-    return a base64 encoded onnx model_proto from base64 encode mio tf model_proto.
-    @param:
-      mio_graph_b64: a base64 encoded mio tf graph def
-      inputs: model's input node name (exclude ":idx")
-      params: model's param node name (exclude ":idx")
-      output_tensor_names: model's output tensor name (include "idx")
-    """
-    real_graph_b64 = mio_graph_b64
-    if mio_graph_b64[:9] == "base64://":
-        real_graph_b64 = mio_graph_b64[9:]
-
-    mio_graph = graph_pb2.GraphDef()
-    mio_graph.ParseFromString(base64.b64decode(real_graph_b64.encode("ascii")))
-    return miotf_to_onnxb64(
-        mio_graph,
-        inputs,
-        params,
-        output_tensor_names,
-        opset=opset,
-        is_export_onnx=is_export_onnx,
-        output_path=output_path,
-    )
