@@ -1,5 +1,20 @@
 # all2onnx
 
+## 环境安装（Conda + pip）
+
+```bash
+conda create -n your_env_name python=3.7
+conda activate your_env_name
+
+pip3 install tensorflow==1.15
+pip3 install tf2onnx
+pip3 install pyyaml
+```
+
+> 说明：
+> - 本仓库部分流程依赖 TensorFlow；`to-onnx` 子命令会读取 TF 的 `GraphDef` 并转换。
+> - 如需导出 onnx 文件（含 external data），还需安装 `onnx`（通常会被 `tf2onnx` 间接安装；如缺失可手动 `pip3 install onnx`）。
+
 ## 命令行（CLI）
 
 本仓库提供命令行入口脚本：`all2onnx_cli.py`
@@ -46,4 +61,8 @@ python3 all2onnx_cli.py convert-b64 \
   --outputs out:0 \
   --export-onnx --output-dir ./output_dir
 ```
+
+## TODO
+
+- [ ] 将 `onnx_tensorrt_help/tensorflow_custom_ops/*.so` 对应的 **tf custom op 编译源码**与构建脚本引入本仓库，并补充不同 TF 版本（1.15/2.4/2.15）的构建说明与产物路径。
 
